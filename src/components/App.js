@@ -5,7 +5,7 @@ import forca3 from "../assets/img/forca3.png";
 import forca4 from "../assets/img/forca4.png";
 import forca5 from "../assets/img/forca5.png";
 import forca6 from "../assets/img/forca6.png";
-import words from "../data/palavras"
+import words from "../data/palavras";
 import { useState } from "react";
 
 const alfabeto = [
@@ -37,72 +37,93 @@ const alfabeto = [
   "z",
 ];
 
-function HideLetters(){
-  return(
-    <li>_</li>
-  )
+function HideLetters() {
+  return <li>_</li>;
 }
 let cont = 0;
 let images = [forca0, forca1, forca2, forca3, forca4, forca5, forca6];
 export default function App() {
-  const [image,setImage] =useState(images[cont]);
-  const [word, setWord] =useState([]);
+  const [image, setImage] = useState(images[cont]);
+  const [word, setWord] = useState([]);
   const [clicked, setClicked] = useState([]);
   const [haveLetter, setHaveLetter] = useState([]);
   const [noLetter, setNoLetter] = useState([]);
-  const [endGame,setEndGame] = useState(false)
+  const [endGame, setEndGame] = useState(false);
+  const [chute, setChute] = useState("");
 
-
-  // let newArray = [...word];
-
-  function chooseWord(){
-    let position = words[Math.floor(Math.random() * words.length)].split("")
-    setWord(position)
+  function chooseWord() {
+    let position = words[Math.floor(Math.random() * words.length)].split("");
+    setWord(position);
   }
-  function saveLetter(letter){
-    setClicked([...clicked,letter])
-    let compair = word.includes(letter)
-    if(compair){
-      setHaveLetter([...haveLetter,letter])
-      // alert('sim')
-    }else{
-      cont = cont + 1
+
+  function saveLetter(letter) {
+    setClicked([...clicked, letter]);
+    let compair = word.includes(letter);
+    if (compair) {
+      setHaveLetter([...haveLetter, letter]);
+    } else {
+      cont = cont + 1;
       let imgChoosed = images[cont];
-      setImage(imgChoosed)
-      setNoLetter([...noLetter,letter])
-      if(cont === 6){
-        setEndGame(true)
+      setImage(imgChoosed);
+      setNoLetter([...noLetter, letter]);
+      if (cont === 6) {
+        setEndGame(true);
       }
-      // alert('no')
     }
   }
-
-
-
+  function compairWords() {
+    let strWord = word.join("");
+    if (word.length !== 0) {
+      strWord.toUpperCase() === chute.toUpperCase()
+        ? alert("acertou")
+        : alert("errou");
+    }
+  }
 
   return (
     <>
       <main>
         <div className="forca">
-          <img src={image} />
+          <img data-identifier="game-image" src={image} />
           <aside>
-            <button onClick={chooseWord}>Escolher Palavra</button>
+            <button onClick={chooseWord} data-identifier="choose-word">
+              Escolher Palavra
+            </button>
             <ul>
-
-              {!endGame? word.map((el,index) => <HideLetters key={index} />):<li className="color">Quarentena</li>}
+              {!endGame ? (
+                word.map((el, index) => <HideLetters key={index} />)
+              ) : (
+                <li className="color">{word}</li>
+              )}
             </ul>
           </aside>
         </div>
         <div className="typeArea">
           <ul>
-            {alfabeto.map((el,index) => (
-              <li key={index} onClick={word.length!==0 ? ()=>saveLetter(el):() => console.warn("not yet")}>{el.toUpperCase()}</li>
+            {alfabeto.map((el, index) => (
+              <li
+                data-identifier="letter"
+                key={index}
+                className={word.length !== 0 ? "backcolor1" : "backcolor2"}
+                onClick={
+                  word.length !== 0
+                    ? () => saveLetter(el)
+                    : () => console.warn("not yet")
+                }
+              >
+                {el.toUpperCase()}
+              </li>
             ))}
           </ul>
           <div className="answear">
             <label>Já sei a palavra!</label>
-            <input type="text"></input>
-            <button>Chutar</button>
+            <input
+              data-identifier="type-guess"
+              type="text"
+              value={chute}
+              onChange={(e) => setChute(e.target.value)}
+            ></input>
+            <button onClick={compairWords} data-identifier="guess-button">Chutar</button>
           </div>
         </div>
       </main>
